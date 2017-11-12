@@ -1,0 +1,44 @@
+#version 330 core
+
+// Interpolated values from the vertex shaders
+in vec4 fragmentcolor;
+in vec3 normal_camspace;
+in vec3 lightdir_camspace;
+in vec3 eyedir_camspace;
+in vec3 pos_worldspace;
+
+// Ouput data
+out vec3 color;
+
+uniform vec3 LightPosition_worldspace;
+
+void main()
+     {
+       	
+	vec3 lightcolor = vec3(1.0f,1.0f,1.0f);
+
+	float lightpower = 1e7f;
+
+	vec3 mat_diffuse = fragmentcolor.xyz;
+	vec3 mat_ambient = vec3(0.5, 0.5, 0.5) * mat_diffuse;
+	vec3 mat_specular = vec3(0.3, 0.3, 0.3);
+
+	float dist = length( LightPosition_worldspace - pos_worldspace );
+	vec3 n = normalize( normal_camspace );
+	vec3 l = normalize( lightdir_camspace );
+	float cosTheta = clamp( dot( n,-l ), 0.0f, 1.0f );
+	
+	vec3 E = normalize(eyedir_camspace );
+	//REV: switched from reflect(-l,n) to  (l,n)
+	vec3 R = reflect(-l, n);
+	float cosAlpha = clamp( dot( E,R ), 0.0f, 1.0f );
+
+	vec3 amb = mat_ambient;
+	vec3 diff = (mat_diffuse * lightcolor * lightpower * cosTheta) / (dist*dist);
+	vec3 spec = (mat_specular * lightcolor * lightpower * pow(cosAlpha, 5.0f)) / (dist*dist);
+
+	color = amb + diff + spec;
+	
+	//color = mat_ambient + (mat_diffuse * lightcolor * lightpower * cosTheta) / (dist*dist) + (mat_specular * lightcolor * lightpower * pow(cosAlpha, 5.0f)) / (dist*dist);
+	
+}

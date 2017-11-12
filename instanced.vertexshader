@@ -1,0 +1,39 @@
+#version 330 core
+
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertpos;
+layout(location = 1) in vec4 vertcolor;
+layout(location = 2) in mat4 verttransforms;
+layout(location = 6) in vec3 vertnormal;
+
+// Output data ; will be interpolated for each fragment.
+out vec4 fragmentcolor;
+out vec3 normal_camspace;
+out vec3 lightdir_camspace;
+out vec3 eyedir_camspace;
+out vec3 pos_worldspace;
+
+uniform mat4 V;
+uniform mat4 P;
+uniform vec3 LightPosition_worldspace;
+
+void main(){
+     gl_Position = P * V * verttransforms * vec4(vertpos, 1.0f);
+
+     fragmentcolor = vertcolor;
+     
+
+     //REV: fuck this does scale the model, need to use "its inverse transpose"
+     normal_camspace = (V * verttransforms * vec4(vertnormal, 0.0f)).xyz;
+
+     pos_worldspace = (verttransforms * vec4(vertpos, 1.0f)).xyz;
+
+     vec3 vertpos_camspace = ( V * verttransforms * vec4( vertpos, 1.0f )).xyz;
+
+     eyedir_camspace = normalize( vec3(0.0f,0.0f,0.0f) - vertpos_camspace );
+     
+     vec3 lightpos_camspace = ( V * vec4(LightPosition_worldspace, 1.0f) ).xyz;
+     
+     lightdir_camspace = normalize( lightpos_camspace + eyedir_camspace );
+}
+

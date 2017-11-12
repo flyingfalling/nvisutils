@@ -1,0 +1,2 @@
+NFV spike color add exp tau 10 map keypoints 2 p 0 0 0 p 1 0 0 scale add exp tau 10 map min 1 max 2 translate add exp tau 10 map min 0 0 0 max 0 0 0 deleteafter 100
+HORIZ spike color add exp tau 10 map keypoints 2 p 0 0 0 p 0 0 1 scale add exp tau 10 map min 1 max 2 translate add exp tau 10 map min 0 0 0 max 0 0 0 deleteafter 100
